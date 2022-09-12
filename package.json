@@ -66,5 +66,9 @@
       "npm run lint-fix",
       "git add"
     ]
-  }
+  },
+  "main": "index.js",
+  "repository": "https://github.com/DanilYoh/Todo-App-React.git",
+  "author": "Danil Nurtdinov <danilyoh.44gmail.com>",
+  "license": "MIT"
 }
