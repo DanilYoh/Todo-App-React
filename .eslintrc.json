@@ -55,6 +55,7 @@
 // }
 {
   "env": {
+    "CI": false,
     "browser": true,
     "es2021": true
   },
