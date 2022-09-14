@@ -17,7 +17,7 @@ export default class App extends Component {
   createTaskItem(label) {
     return {
       label: label,
-      id: 101,
+      id: Math.floor(Math.random() * 1000000),
       active: true,
       edit: false,
     };
