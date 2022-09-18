@@ -68,6 +68,30 @@ export default class App extends Component {
     });
   };
 
+  onEdit = (id) => {
+    this.setState(({ taskData }) => {
+      const idx = taskData.findIndex((e) => e.id === id);
+      const oldItem = taskData[idx];
+      const newItem = { ...oldItem, edit: !oldItem.edit };
+      const newArr = [...taskData.slice(0, idx), newItem, ...taskData.slice(idx + 1)];
+      return {
+        taskData: newArr,
+      };
+    });
+  };
+
+  handleEditTask = (id, text) => {
+    this.setState(({ taskData }) => {
+      const idx = taskData.findIndex((e) => e.id === id);
+      const oldItem = taskData[idx];
+      const newItem = { ...oldItem, label: text, edit: false };
+      const newArr = [...taskData.slice(0, idx), newItem, ...taskData.slice(idx + 1)];
+      return {
+        taskData: newArr,
+      };
+    });
+  };
+
   filter(items, filter) {
     switch (filter) {
       case 'all':
@@ -85,32 +109,8 @@ export default class App extends Component {
     this.setState({ filter });
   };
 
-  onEdit = (id) => {
-    this.setState(({ taskData }) => {
-      const idx = taskData.findIndex((e) => e.id === id);
-      const oldItem = taskData[idx];
-      const newItem = { ...oldItem, edit: !oldItem.edit };
-      const newArr = [...taskData.slice(0, idx), newItem, ...taskData.slice(idx + 1)];
-      return {
-        taskData: newArr,
-      };
-    });
-  };
-
-  handleEditTask = (id, text) => {
-    this.setState(({ taskData }) => {
-      const idx = taskData.findIndex((el) => el.id === id);
-      const oldItem = taskData[idx];
-      const newItem = { ...oldItem, label: text, edit: false };
-      const newArr = [...taskData.slice(0, idx), newItem, ...taskData.slice(idx + 1)];
-      return {
-        taskData: newArr,
-      };
-    });
-  };
-
   render() {
-    const taskCount = this.state.taskData.filter((el) => el.active).length;
+    const taskCount = this.state.taskData.filter((e) => e.active).length;
     const visibleTasks = this.filter(this.state.taskData, this.state.filter);
     return (
       <section className="todoapp">
