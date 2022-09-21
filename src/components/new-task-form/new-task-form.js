@@ -4,9 +4,12 @@ export default class NewTaskForm extends React.Component {
   state = {
     label: '',
   };
+
   onSubmit = (e) => {
     e.preventDefault();
-    this.props.onAddTask(this.state.label);
+    if(this.state.label.trim().length) {
+      this.props.onAddTask(this.state.label)
+    }
     this.setState({
       label: '',
     });
@@ -26,9 +29,10 @@ export default class NewTaskForm extends React.Component {
             type="text"
             className="new-todo"
             placeholder="What needs to be done?"
+            autoFocus
             onChange={this.onInputChange}
             value={this.state.label}
-          />
+          />{' '}
         </form>
       </header>
     );

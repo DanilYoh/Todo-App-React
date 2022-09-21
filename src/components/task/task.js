@@ -35,19 +35,23 @@ export default class Task extends Component {
   };
 
   render() {
-    let { onDeleted, active, onToggleDone, edit, onEdit } = this.props;
+    let { onDeleted, completed, onToggleDone, editing, onEdit } = this.props;
     const textTime = `created ${this.state.currentTime} ago`;
     let { label } = this.state;
     let taskClassNames = '';
-    if (!active) {
-      taskClassNames += ' completed';
+    if (completed) {
+      taskClassNames = ' completed';
     }
 
-    if (!edit) {
+    if (editing) {
+      taskClassNames = 'editing';
+    }
+
+  
       return (
         <li className={taskClassNames}>
           <div className="view">
-            <input type="checkbox" className="toggle" onClick={onToggleDone} />
+            <input type="checkbox" className="toggle" checked={taskClassNames === ' completed'} onChange={onToggleDone} />
             <label>
               <span className="description">{label}</span>
               <span className="created">{textTime}</span>
@@ -55,14 +59,12 @@ export default class Task extends Component {
             <button className="icon icon-edit" onClick={onEdit}></button>
             <button className="icon icon-destroy" onClick={onDeleted}></button>
           </div>
+          {editing && (
+            <form onSubmit={this.onEditSubmit}>
+            <input type="text" className="edit" value={label} onChange={this.onEditChange} />
+          </form>
+          )}
         </li>
       );
-    } else {
-      return (
-        <form onSubmit={this.onEditSubmit}>
-          <input type="text" className="edit" value={label} onChange={this.onEditChange} />
-        </form>
-      );
-    }
   }
 }

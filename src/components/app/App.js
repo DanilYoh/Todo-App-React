@@ -5,6 +5,69 @@ import TaskList from '../task-list';
 import Footer from '../footer';
 
 export default class App extends Component {
+
+  // deleteTask = (id) => {
+  //   this.setState(({ taskData }) => {
+  //     const idx = taskData.findIndex((e) => e.id === id);
+  //     const newArr = [...taskData.slice(0, idx), ...taskData.slice(idx + 1)];
+
+  //     return {
+  //       taskData: newArr,
+  //     };
+  //   });
+  // };
+
+  // onToggleDone = (id) => {
+  //   this.setState(({ taskData }) => {
+  //     const idx = taskData.findIndex((e) => e.id === id);
+  //     const oldItem = taskData[idx];
+  //     const newItem = { ...oldItem, active: !oldItem.active };
+  //     const newArr = [...taskData.slice(0, idx), newItem, ...taskData.slice(idx + 1)];
+  //     return {
+  //       taskData: newArr,
+  //     };
+  //   });
+  // };
+
+  // onClearCompleted = () => {
+  //   this.setState(({ taskData }) => {
+  //     const newArr = taskData.filter((task) => {
+  //       return task.active;
+  //     });
+  //     return {
+  //       taskData: newArr,
+  //     };
+  //   });
+  // };
+
+  // onEdit = (id) => {
+  //   this.setState(({ taskData }) => {
+  //     const idx = taskData.findIndex((e) => e.id === id);
+  //     const oldItem = taskData[idx];
+  //     const newItem = { ...oldItem, edit: !oldItem.edit };
+  //     const newArr = [...taskData.slice(0, idx), newItem, ...taskData.slice(idx + 1)];
+  //     return {
+  //       taskData: newArr,
+  //     };
+  //   });
+  // };
+
+  // handleEditTask = (id, text) => {
+  //   this.setState(({ taskData }) => {
+  //     const idx = taskData.findIndex((e) => e.id === id);
+  //     const oldItem = taskData[idx];
+  //     const newItem = { ...oldItem, label: text, edit: false };
+  //     const newArr = [...taskData.slice(0, idx), newItem, ...taskData.slice(idx + 1)];
+  //     return {
+  //       taskData: newArr,
+  //     };
+  //   });
+  // };
+
+  // onFilterChange = (filter) => {
+  //   this.setState({ filter });
+  // };
+
   state = {
     taskData: [
       this.createTaskItem('Сompleted task'),
@@ -18,32 +81,24 @@ export default class App extends Component {
     return {
       label: label,
       id: Math.floor(Math.random() * 1000000),
+      completed: false,
       active: true,
-      edit: false,
+      editing: false,
     };
   }
-
-  deleteTask = (id) => {
-    this.setState(({ taskData }) => {
-      const idx = taskData.findIndex((e) => e.id === id);
-      const newArr = [...taskData.slice(0, idx), ...taskData.slice(idx + 1)];
-
-      return {
-        taskData: newArr,
-      };
+  
+  onFilterChange = (filter) => {
+    this.setState({
+      filter,
     });
   };
 
+  onEdit = (id) => {
+    this.toggleProperty(id, 'editing');
+  };
+
   onToggleDone = (id) => {
-    this.setState(({ taskData }) => {
-      const idx = taskData.findIndex((e) => e.id === id);
-      const oldItem = taskData[idx];
-      const newItem = { ...oldItem, active: !oldItem.active };
-      const newArr = [...taskData.slice(0, idx), newItem, ...taskData.slice(idx + 1)];
-      return {
-        taskData: newArr,
-      };
-    });
+    this.toggleProperty(id, 'completed');
   };
 
   addTask = (text) => {
@@ -57,10 +112,14 @@ export default class App extends Component {
     });
   };
 
-  onClearCompleted = () => {
+  handleEditTask = (id, text) => {
     this.setState(({ taskData }) => {
-      const newArr = taskData.filter((task) => {
-        return task.active;
+      const newArr = taskData.map((el, i) => {
+        if (el.id === id) {
+          el.label = text;
+          el.editing = !taskData[i].editing;
+        }
+        return el;
       });
       return {
         taskData: newArr,
@@ -68,50 +127,49 @@ export default class App extends Component {
     });
   };
 
-  onEdit = (id) => {
+  deleteTask = (id) => {
+    this.setState(({ taskData }) => ({
+      taskData: taskData.filter((item) => item.id !== id),
+    }));
+  };
+
+  toggleProperty = (id, propName) => {
     this.setState(({ taskData }) => {
-      const idx = taskData.findIndex((e) => e.id === id);
-      const oldItem = taskData[idx];
-      const newItem = { ...oldItem, edit: !oldItem.edit };
-      const newArr = [...taskData.slice(0, idx), newItem, ...taskData.slice(idx + 1)];
+      const newArr = taskData.map((el, i) => {
+        if (el.id === id) {
+          el[propName] = !taskData[i][propName];
+        }
+        return el;
+      });
       return {
         taskData: newArr,
       };
     });
   };
 
-  handleEditTask = (id, text) => {
-    this.setState(({ taskData }) => {
-      const idx = taskData.findIndex((e) => e.id === id);
-      const oldItem = taskData[idx];
-      const newItem = { ...oldItem, label: text, edit: false };
-      const newArr = [...taskData.slice(0, idx), newItem, ...taskData.slice(idx + 1)];
-      return {
-        taskData: newArr,
-      };
-    });
-  };
-
-  filter(items, filter) {
+  filter = (items, filter) => {
     switch (filter) {
       case 'all':
         return items;
       case 'active':
-        return items.filter((item) => item.active);
-      case 'done':
-        return items.filter((item) => !item.active);
+        return items.filter((el) => !el.completed);
+      case 'completed':
+        return items.filter((el) => el.completed);
       default:
         return items;
     }
-  }
+  };
 
-  onFilterChange = (filter) => {
-    this.setState({ filter });
+  onClearCompleted = () => {
+    this.setState(({ taskData }) => ({
+      taskData: taskData.filter((el) => !el.completed),
+    }));
   };
 
   render() {
-    const taskCount = this.state.taskData.filter((e) => e.active).length;
-    const visibleTasks = this.filter(this.state.taskData, this.state.filter);
+    const taskCount = this.state.taskData.filter((e) => e.completed).length;
+    const { taskData, filter } = this.state;
+    const visibleTasks = this.filter(taskData, filter);
     return (
       <section className="todoapp">
         <NewTaskForm onAddTask={this.addTask} />
@@ -125,7 +183,7 @@ export default class App extends Component {
           />
           <Footer
             count={taskCount}
-            filter={this.state.filter}
+            filter={filter}
             onFilterChange={this.onFilterChange}
             onClearCompleted={this.onClearCompleted}
           />

@@ -4,17 +4,17 @@ export default class TasksFilter extends React.Component {
   buttons = [
     { name: 'all', label: 'All' },
     { name: 'active', label: 'Active' },
-    { name: 'done', label: 'Completed' },
+    { name: 'completed', label: 'Completed' },
   ];
 
   render() {
     const { filter, onFilterChange } = this.props;
     const buttons = this.buttons.map(({ name, label }) => {
       const isActive = filter === name;
-      const btnClass = isActive ? 'selected' : '';
+      const btnClass = isActive ? 'selected' : null;
       return (
         <li key={name}>
-          <button className={btnClass} mode={name} onClick={() => onFilterChange(name)}>
+          <button className={`${btnClass}`} mode={name} onClick={() => onFilterChange(name)}>
             {label}
           </button>
         </li>
