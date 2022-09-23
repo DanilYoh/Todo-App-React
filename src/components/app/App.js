@@ -1,191 +1,126 @@
 import React, { Component } from 'react';
-
+import Footer from '../footer';
 import NewTaskForm from '../new-task-form';
 import TaskList from '../task-list';
-import Footer from '../footer';
 
 export default class App extends Component {
-
-  // deleteTask = (id) => {
-  //   this.setState(({ taskData }) => {
-  //     const idx = taskData.findIndex((e) => e.id === id);
-  //     const newArr = [...taskData.slice(0, idx), ...taskData.slice(idx + 1)];
-
-  //     return {
-  //       taskData: newArr,
-  //     };
-  //   });
-  // };
-
-  // onToggleDone = (id) => {
-  //   this.setState(({ taskData }) => {
-  //     const idx = taskData.findIndex((e) => e.id === id);
-  //     const oldItem = taskData[idx];
-  //     const newItem = { ...oldItem, active: !oldItem.active };
-  //     const newArr = [...taskData.slice(0, idx), newItem, ...taskData.slice(idx + 1)];
-  //     return {
-  //       taskData: newArr,
-  //     };
-  //   });
-  // };
-
-  // onClearCompleted = () => {
-  //   this.setState(({ taskData }) => {
-  //     const newArr = taskData.filter((task) => {
-  //       return task.active;
-  //     });
-  //     return {
-  //       taskData: newArr,
-  //     };
-  //   });
-  // };
-
-  // onEdit = (id) => {
-  //   this.setState(({ taskData }) => {
-  //     const idx = taskData.findIndex((e) => e.id === id);
-  //     const oldItem = taskData[idx];
-  //     const newItem = { ...oldItem, edit: !oldItem.edit };
-  //     const newArr = [...taskData.slice(0, idx), newItem, ...taskData.slice(idx + 1)];
-  //     return {
-  //       taskData: newArr,
-  //     };
-  //   });
-  // };
-
-  // handleEditTask = (id, text) => {
-  //   this.setState(({ taskData }) => {
-  //     const idx = taskData.findIndex((e) => e.id === id);
-  //     const oldItem = taskData[idx];
-  //     const newItem = { ...oldItem, label: text, edit: false };
-  //     const newArr = [...taskData.slice(0, idx), newItem, ...taskData.slice(idx + 1)];
-  //     return {
-  //       taskData: newArr,
-  //     };
-  //   });
-  // };
-
-  // onFilterChange = (filter) => {
-  //   this.setState({ filter });
-  // };
-
   state = {
-    taskData: [
-      this.createTaskItem('Сompleted task'),
-      this.createTaskItem('Editing task'),
-      this.createTaskItem('Active task'),
-    ],
-    filter: 'all',
-  };
-
-  createTaskItem(label) {
-    return {
-      label: label,
-      id: Math.floor(Math.random() * 1000000),
-      completed: false,
-      active: true,
-      editing: false,
+      tasks: [
+        this.createTaskItem('Completed'),
+        this.createTaskItem('Editing'),
+        this.createTaskItem('Active'),
+      ],
+      fiIter: 'all',
     };
-  }
+
+    handleToggleStatus = (taskId) => {
+      this.setState(({ tasks }) => {
+        const newState = tasks.map((task) => {
+          if (taskId === task.id) {
+            task.isActive = !task.isActive;
+          }
+
+          return task;
+        });
+        return { tasks: newState };
+      });
+    };
+
+    handleCreateTask = (text, minutes, seconds) => {
+      const timerValue = [minutes, seconds];
+      this.setState(({ tasks }) => ({
+        tasks: [
+          ...tasks,
+          { text, id: Math.random() * 10000, isActive: true, isEditing: false, created: Date.now(), timerValue },
+        ],
+      }));
+    };
+
+    handleDeleteTask = (taskId) => {
+      this.setState(({ tasks }) => {
+        const newState = tasks.filter((task) => taskId !== task.id);
+
+        return { tasks: newState };
+      });
+    };
+
+    handleDeleteCompletedTasks = () => {
+      this.setState(({ tasks }) => {
+        const newState = tasks.filter((task) => (task.isActive ? task : null));
+
+        return { tasks: newState };
+      });
+    };
+
+    handleToggleEditInput = (taskId) => {
+      this.setState(({ tasks }) => {
+        const newState = tasks.map((task) => {
+          if (taskId === task.id) {
+            task.isEditing = !task.isEditing;
+          }
+
+          return task;
+        });
+
+        return { tasks: newState };
+      });
+    };
+
+    handleEditTask = (text, taskId) => {
+      this.setState(({ tasks }) => {
+        const newState = tasks.map((task) => {
+          if (taskId === task.id) {
+            task.text = text;
+            task.isEditing = !task.isEditing;
+          }
+
+          return task;
+        });
+
+        return { tasks: newState };
+      });
+    };
+
+    handleToggleFilter = (name) => {
+      this.setState({
+        fiIter: name,
+      });
+    };
   
-  onFilterChange = (filter) => {
-    this.setState({
-      filter,
-    });
-  };
-
-  onEdit = (id) => {
-    this.toggleProperty(id, 'editing');
-  };
-
-  onToggleDone = (id) => {
-    this.toggleProperty(id, 'completed');
-  };
-
-  addTask = (text) => {
-    const newItem = this.createTaskItem(text);
-
-    this.setState(({ taskData }) => {
-      const newArr = [...taskData, newItem];
+    createTaskItem(label) {
       return {
-        taskData: newArr,
+        id: Math.floor(Math.random() * 1000000),
+        text: label,
+        isActive: true,
+        isEditing: false,
+        created: Date.now(),
+        timerValue: [0, 0],
       };
-    });
-  };
-
-  handleEditTask = (id, text) => {
-    this.setState(({ taskData }) => {
-      const newArr = taskData.map((el, i) => {
-        if (el.id === id) {
-          el.label = text;
-          el.editing = !taskData[i].editing;
-        }
-        return el;
-      });
-      return {
-        taskData: newArr,
-      };
-    });
-  };
-
-  deleteTask = (id) => {
-    this.setState(({ taskData }) => ({
-      taskData: taskData.filter((item) => item.id !== id),
-    }));
-  };
-
-  toggleProperty = (id, propName) => {
-    this.setState(({ taskData }) => {
-      const newArr = taskData.map((el, i) => {
-        if (el.id === id) {
-          el[propName] = !taskData[i][propName];
-        }
-        return el;
-      });
-      return {
-        taskData: newArr,
-      };
-    });
-  };
-
-  filter = (items, filter) => {
-    switch (filter) {
-      case 'all':
-        return items;
-      case 'active':
-        return items.filter((el) => !el.completed);
-      case 'completed':
-        return items.filter((el) => el.completed);
-      default:
-        return items;
     }
-  };
-
-  onClearCompleted = () => {
-    this.setState(({ taskData }) => ({
-      taskData: taskData.filter((el) => !el.completed),
-    }));
-  };
 
   render() {
-    const taskCount = this.state.taskData.filter((e) => e.completed).length;
-    const { taskData, filter } = this.state;
-    const visibleTasks = this.filter(taskData, filter);
+    const { tasks, fiIter } = this.state;
+
     return (
       <section className="todoapp">
-        <NewTaskForm onAddTask={this.addTask} />
+        <header className="header">
+          <h1>todos</h1>
+          <NewTaskForm onCreateTask={this.handleCreateTask} />
+        </header>
         <section className="main">
           <TaskList
-            taskData={visibleTasks}
-            onDeleted={this.deleteTask}
-            onToggleDone={this.onToggleDone}
-            onEdit={this.onEdit}
-            handleEditTask={this.handleEditTask}
+            tasks={tasks}
+            onChangeStatus={this.handleToggleStatus}
+            onDeleteTask={this.handleDeleteTask}
+            onEditTask={this.handleEditTask}
+            fiIter={fiIter}
+            onToggleEditInput={this.handleToggleEditInput}
           />
           <Footer
-            count={taskCount}
-            filter={filter}
-            onFilterChange={this.onFilterChange}
-            onClearCompleted={this.onClearCompleted}
+            tasks={tasks}
+            onDeleteCompletedTasks={this.handleDeleteCompletedTasks}
+            onToggleFilter={this.handleToggleFilter}
+            fiIter={fiIter}
           />
         </section>
       </section>
