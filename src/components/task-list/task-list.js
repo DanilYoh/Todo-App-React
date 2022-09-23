@@ -1,37 +1,48 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
 import Task from '../task';
+import './task-list.css';
 
-const TaskList = ({ taskData, onDeleted, onToggleDone, onEdit, handleEditTask }) => {
-  const elements = taskData.map((item) => {
-    const { id, ...taskProps } = item;
-    return (
-      <Task
-        key={id}
-        id={id}
-        onDeleted={() => onDeleted(id)}
-        onToggleDone={() => onToggleDone(id)}
-        onEdit={() => onEdit(id)}
-        handleEditTask={handleEditTask}
-        {...taskProps}
-      />
-    );
-  });
-  return <ul className="todo-list">{elements}</ul>;
+const TaskList = ({ tasks, onChangeStatus, onDeleteTask, fiIter, onToggleEditInput, onEditTask }) => {
+  const taskList = tasks.map((task) => (
+    <Task
+      {...task}
+      key={task.id}
+      onChangeStatus={onChangeStatus}
+      onDeleteTask={onDeleteTask}
+      fiIter={fiIter}
+      onToggleEditInput={onToggleEditInput}
+      onEditTask={onEditTask}
+    />
+  ));
+
+  return <ul className="todo-list">{taskList}</ul>;
 };
 
 TaskList.defaultProps = {
-  onDeleted: () => {},
-  onToggleDone: () => {},
-  onEdit: () => {},
-  handleEditTask: () => {},
+  onChangeStatus: () => {},
+  onDeleteTask: () => {},
+  onToggleEditInput: () => {},
+  onEditTask: () => {},
+  fiIter: 'all',
+  tasks: [],
+  task: {},
 };
+
 TaskList.propTypes = {
-  onDeleted: PropTypes.func,
-  onToggleDone: PropTypes.func,
-  onEdit: PropTypes.func,
-  handleEditTask: PropTypes.func,
+  task: PropTypes.shape({
+    text: PropTypes.string,
+    id: PropTypes.number,
+    isActive: PropTypes.bool,
+    isEditing: PropTypes.bool,
+    created: PropTypes.number,
+  }),
+  tasks: PropTypes.arrayOf(PropTypes.object),
+  onChangeStatus: PropTypes.func,
+  onDeleteTask: PropTypes.func,
+  onEditTask: PropTypes.func,
+  onToggleEditInput: PropTypes.func,
+  fiIter: PropTypes.string,
 };
 
 export default TaskList;
